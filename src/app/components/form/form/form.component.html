@@ -1,0 +1,110 @@
+<!-- <div *ngFor="let model of data | async"> -->
+  <form [formGroup]="model.form" [ngClass]="['form', model.model.style]" *ngIf="model">
+<!--     <h6>{{ model.Id }}</h6> -->
+    <ng-container *ngFor="let fields of model.model.fields">
+      <ng-container
+        *ngIf="
+          fields.key !== 'Id' && fields.key !== 'type'
+        "
+        [ngSwitch]="fields.matformfield"
+      >
+        <mat-form-field
+          [appearance]="fields.appearance"
+          *ngSwitchCase="'true'"
+          [ngSwitch]="fields.formtype"
+        >
+          <mat-label>{{ fields.label }}</mat-label>
+          <input
+            matInput
+            *ngSwitchCase="'input'"
+            [placeholder]="fields.placeholder"
+            [formControlName]="fields.key"
+            autocomplete="off"
+            [name]="fields.key"
+          />
+          <textarea
+            matInput
+            *ngSwitchCase="'textarea'"
+            [placeholder]="fields.placeholder"
+            [formControlName]="fields.key"
+            autocomplete="off"
+            [name]="fields.key"
+          ></textarea>
+          <ng-container *ngSwitchCase="'select'">
+            <mat-select
+            [formControlName]="fields.key"
+            autocomplete="off"
+            [multiple]="fields.defaultValue && fields.defaultValue.length > 1 ? true : false"
+          >
+            <mat-option
+              *ngFor="let option of fields.options"
+              [value]="option"
+              >{{ option }}</mat-option
+            >
+          </mat-select>
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'date'">
+            <input
+              matInput
+              [matDatepicker]="accidentD"
+              [formControlName]="fields.key"
+              required
+            />
+            <mat-datepicker-toggle
+              [for]="accidentD"
+              matSuffix
+            ></mat-datepicker-toggle>
+            <mat-datepicker #accidentD></mat-datepicker>
+          </ng-container>
+          <mat-icon
+            *ngIf="fields.icon && fields.iconLocation === 'after'"
+            matSuffix
+            >{{ fields.icon }}</mat-icon
+          >
+          <mat-icon
+            matPrefix
+            *ngIf="fields.icon && fields.iconLocation === 'before'"
+            >{{ fields.icon }}</mat-icon
+          >
+          <mat-hint *ngIf="fields.hint">{{fields.hint}}</mat-hint>
+          <mat-error *ngIf="fields.required === 'true'">{{fields.error}}</mat-error>
+        </mat-form-field>
+        <div *ngSwitchDefault>
+          <div [ngSwitch]="fields.formtype">
+            <div *ngSwitchCase="'checkbox'">
+              <mat-label>{{ fields.label }}</mat-label>
+              <div class="row">
+                <p *ngFor="let option of fields.options" class="row">
+                  <mat-checkbox [formControlName]="fields.key">{{
+                    option
+                  }}</mat-checkbox>
+                </p>
+              </div>
+            </div>
+            <div *ngSwitchCase="'radio'">
+              <mat-label>{{ fields.label }}</mat-label>
+              <div class="row">
+                <ng-container *ngFor="let option of fields.options">
+                  <p>{{ option }}</p>
+                  <input
+                    type="radio"
+                    [value]="option"
+                    [formControlName]="fields.key"
+                  />
+                </ng-container>
+              </div>
+            </div>
+
+          <!--   <ng-container *ngSwitchCase="'button'">
+            <button mat-raised-button *ngIf="submitButton"  type="button"[id]="fields.key" [color]="fields.properties.appearance" (click)="onSubmit(model)">{{fields.properties.label}}</button>
+          </ng-container> -->
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+    <button mat-raised-button   type="button" (click)="onSubmit(model)">Submit</button>
+  </form>
+<!-- </div> -->
+

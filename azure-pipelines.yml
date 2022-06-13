@@ -1,0 +1,67 @@
+trigger:
+  - master
+
+variables:
+  azureResourceGroup: '<INSERT RG>'
+  location: 'uksouth'
+  repo: '<INSET REPO URL>'
+  serviceConnection: '<INSERT SERVICE CONNECTION'
+  staticWebAppName: ''
+  subscriptionId: '<INSERT SUBSCRIPTION ID>'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - checkout: self
+    submodules: true
+
+  - bash: az bicep build --file arm/main.bicep
+    displayName: 'Compile Bicep to ARM'
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    name: DeployStaticWebAppApp
+    displayName: Deploy Static Web App archi
+    inputs:
+          deploymentScope: Resource Group
+          azureResourceManagerConnection: $(serviceConnection)
+          subscriptionId: $(subscriptionId)
+          action: Create Or Update Resource Group
+          resourceGroupName: $(azureResourceGroup)
+          location: $(location)
+          templateLocation: Linked artifact
+          csmFile: 'arm/main.json' # created by bash script
+          overrideParameters: >-
+            -repositoryUrl $(repo)
+            -repositoryBranch $(Build.SourceBranchName)
+            -appName $(staticWebAppName)
+          deploymentMode: Incremental
+          deploymentOutputs: deploymentOutputs
+
+  - task: PowerShell@2
+    name: 'SetDeploymentOutputVariables'
+    displayName: 'Set Deployment Output Variables'
+    inputs:
+          targetType: inline
+          script: |
+            $armOutputObj = '$(deploymentOutputs)' | ConvertFrom-Json
+            $armOutputObj.PSObject.Properties | ForEach-Object {
+              $keyname = $_.Name
+              $value = $_.Value.value
+
+              # Creates a standard pipeline variable
+              Write-Output "##vso[task.setvariable variable=$keyName;issecret=true]$value"
+
+              # Display keys in pipeline
+              Write-Output "output variable: $keyName"
+            }
+          pwsh: true
+
+  - task: AzureStaticWebApp@0
+    name: DeployStaticWebApp
+    displayName: Deploy Static Web App
+    inputs:
+          app_location: '/'
+          api_location: 'api'
+          output_location: 'dist/test1'
+          azure_static_web_apps_api_token: $(deployment_token) # captured from deploymentOutputs

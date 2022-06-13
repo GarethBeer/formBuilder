@@ -1,0 +1,44 @@
+.body {
+  z-index:0;
+  position:relative;
+  top:0;
+  transition: all .6s ease;
+  background: whitesmoke;
+  box-sizing: border-box;
+}
+
+.body-open-left {
+  width: calc(100% - 14rem);
+  min-height:100vh;
+  margin-left: 14rem;
+}
+.body-open-right {
+  width: calc(100% - 14rem);
+  min-height:100vh;
+  margin-right: 14rem;
+}
+
+.body-trimmed-left {
+  width: calc(100% - 5rem);
+  margin-left: 5rem;
+}
+.body-trimmed-right {
+  width: calc(100% - 5rem);
+  margin-right: 5rem;
+}
+
+.body-full {
+  width:100%;
+  margin: 64px 0 100px 0;
+}
+
+
+.over {
+  width: calc(100% - 5rem);
+  margin-left:5rem;
+}
+
+.content {
+  height: calc(100vh - 6rem);
+  overflow-y: scroll;
+}

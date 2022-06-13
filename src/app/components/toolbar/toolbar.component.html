@@ -1,0 +1,24 @@
+<ng-container *ngIf="(collapsed |async) as sidenav">
+<mat-toolbar class="toolbar" [ngClass]="sidenav.collapsed ? 'collapsed':'open'">
+  <h2 *ngIf="sidenav.collapsed || sidenav.position === 'sidenav-bottom'"
+  >{{appName | async}}</h2>
+<div>
+  <span>{{username}}</span>
+ <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="menu button"><mat-icon>more_vert</mat-icon></button>
+ </div>
+  <mat-menu #menu class="menu">
+    <div  mat-menu-item class="menu-item">
+      <mat-icon >{{loggedIn ?'logout' :'login'}}</mat-icon>
+      <a [href]="loggedIn ? '/.auth/logout' : '/.auth/login/aad'">{{loggedIn ?'logout' :'login'}}</a>
+    </div>
+    <div mat-menu-item class="menu-item">
+      <mat-icon>update</mat-icon>
+      <span>Version: {{version}}</span>
+    </div>
+    <div mat-menu-item class="menu-item">
+      <mat-icon>cloud_upload</mat-icon>
+      <span>{{release}}</span>
+    </div>
+  </mat-menu>
+</mat-toolbar>
+</ng-container>

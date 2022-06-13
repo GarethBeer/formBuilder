@@ -1,0 +1,49 @@
+<ng-container *ngIf="sidebarSettings$ | async as sidebarsettings">
+<div [ngClass]="[sidebarsettings.styleClassList]">
+  <div [ngClass]="sidebarsettings.handset || sidebarsettings.position === 'sidenav-bottom' ? 'logo-container logo-container-bottom' :  'logo-container logo-container-side'"  *ngIf="sidebarsettings.position !== 'sidenav-bottom'">
+    <button
+      class="logo"
+      (mouseenter)="mouseOverlogo(true, sidebarsettings.collapsed)"
+      (mouseleave)="mouseOverlogo(false, sidebarsettings.collapsed)"
+      (click)="toggleCollapse(!sidebarsettings.collapsed, sidebarsettings.mode)"
+      [ngClass]="
+      !sidebarsettings.handset && sidebarsettings.position === 'sidenav-bottom' ? 'logo-straight' : logo  ? 'logo-left' : sidebarsettings.collapsed && !logo ? 'logo-right' : 'logo-straight'
+      "
+    >
+      A
+    </button>
+    <div
+      class="logo-text"
+      *ngIf="!sidebarsettings.collapsed && !(sidebarsettings.handset || sidebarsettings.position === 'sidenav-bottom')"
+    >
+      {{ appName | async }}
+    </div>
+  </div>
+
+  <ul
+    [ngClass]="(sidebarsettings.handset || sidebarsettings.position === 'sidenav-bottom') ? 'nav nav-bottom' :  'nav nav-side'"
+  >
+    <div [ngClass]="sidebarsettings.handset || sidebarsettings.position === 'sidenav-bottom' ? 'nav-bottom' : ''">
+      <div class="sidenav-nav-item" *ngFor="let item of navData">
+        <a
+          [routerLink]="[item.routerLink]"
+          routerLinkActive="router-link-active"
+          class="sidenav-nav-link"
+        >
+          <mat-icon class="material-icons-outlined sidenav-nav-icon">{{
+            item.icon
+          }}</mat-icon>
+          <span
+            class="sidenav-nav-link-text"
+            *ngIf="!sidebarsettings.collapsed && !(sidebarSettings$ | async).handset"
+            >{{ item.text }}</span
+          >
+        </a>
+      </div>
+  </div>
+  </ul>
+</div>
+
+
+
+</ng-container>

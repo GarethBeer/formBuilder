@@ -1,0 +1,28 @@
+<div class="container">
+  <mat-form-field>
+    <mat-label>Lov Name</mat-label>
+<input matInput [(ngModel)]="lovName" />
+  </mat-form-field>
+
+<button mat-raised-button color="accent" (click)="createLookup()" *ngIf="displayForm" [disabled]="!lovName">Add new lov</button>
+
+<mat-tab-group>
+  <mat-tab *ngFor="let lov of lookups$ | async" [label]="lov.Id">
+    <app-form [formname]="'lov'" [model]="lovForm" *ngIf="displayForm" [style]="'row'"(submit)="handleSubmits($event, lov.Id)"></app-form>
+    <ng-container *ngIf="lov.values.length > 0">
+      <form *ngFor="let value of lov.values| formPipe; let i = index " [formGroup]="value" class="lov-fields row">
+        <ng-container *ngFor="let control of value.controls | keyvalue">
+          <mat-form-field appearance="fill" *ngIf="control.key !== 'Id' && control.key !== 'type'">
+          <mat-label>{{control.key}}</mat-label>
+          <input matInput [formControl]="value.get(control.key)" />
+        </mat-form-field>
+        </ng-container>
+        <mat-icon (click)="editField(lov,i, value)">save</mat-icon>
+        <mat-icon (click)="deleteField(lov, i)">delete</mat-icon>
+
+      </form>
+    </ng-container>
+
+  </mat-tab>
+</mat-tab-group>
+</div>

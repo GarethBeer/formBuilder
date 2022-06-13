@@ -1,0 +1,108 @@
+@import '../../../colors.scss';
+
+.card-container {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  width:100%;
+  align-items: center;
+  gap:3rem;
+  padding:2rem;
+  box-sizing: border-box;
+}
+
+.card {
+  display:flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-width: 200px;
+  width:100%;
+  .mat-expansion-panel {
+    width:100%;
+
+    .mat-expansion-panel-header {
+      display:flex;
+      justify-content: space-between;
+      background-color: $primary-color;
+      box-shadow: 2px 0px 2px grey;
+
+      .mat-expansion-panel-header-title,  .mat-expansion-panel-header-description {
+        flex-grow:0;
+        color:white;
+      }
+      .mat-expansion-indicator {
+        color:white !important;
+      }
+    }
+    .expansion-body {
+      margin-top:0.938rem;
+    }
+  }
+}
+
+.container {
+  box-sizing: border-box;
+  .create-model {
+    width:100%;
+    margin:auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    font-size: small;
+    gap:1rem;
+
+    button {
+      margin-top:10px;
+    }
+  }
+}
+.form {
+  display:flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  width:100%;
+  gap:1rem;
+}
+
+
+.class-btn {
+  background-color: $primary-color;
+  color: $accent-color;
+}
+
+
+
+.card {
+  /* background-color: $primary-color; */
+  color:  $primary-color;
+
+  .mat-card-header {
+    width:100%;
+    border-bottom: 2px solid $accent-color;
+    margin-bottom:10px;
+  }
+  .mat-card-title {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    gap:2rem;
+  }
+
+  .mat-card-content {
+    width:100%;
+  }
+}
+
+
+.preview {
+  width:70%;
+  margin:auto
+}
+.individual-fields {
+  border: 2px solid $primary-color;
+  box-sizing:border-box;
+  padding:2rem;
+  margin:1rem;
+}

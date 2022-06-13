@@ -1,0 +1,131 @@
+
+ <div>
+  <form [formGroup]="createFormForm" class="form-container">
+    <h3>Form Generator</h3>
+    <p>Form properties</p>
+    <mat-form-field>
+      <mat-label>Form Name</mat-label>
+      <input matInput formControlName="key"
+      [matAutocomplete]="autoModels"/>
+      <mat-autocomplete #autoModels>
+        <mat-option *ngFor="let model of models$ | async" [value]="model.Id">{{model.Id}}</mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  <button type="button" mat-raised-button (click)="createForm()">Generate Form</button>
+</form>
+
+
+   <mat-tab-group >
+    <mat-tab *ngFor="let form of forms; let i = index" [label]="form.value.key">
+      <h3 >{{form.value.key}}</h3>
+      <form [formGroup]="form">
+        <p>Field details</p>
+        <mat-form-field>
+          <mat-label>Styles</mat-label>
+          <mat-select formControlName="style">
+            <mat-option value='style1'>style1</mat-option>
+            <mat-option value='style2'>style2</mat-option>
+            <mat-option value='style3'>style3</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div formArrayName="fields">
+          <div *ngFor="let fieldForm of form.controls.fields.controls; let i = index">
+            <div [formGroupName]="i">
+              <div class="row">
+              <mat-form-field appearance="outline" >
+                <mat-label>Key</mat-label>
+                <input matInput type="text" formControlName="key"/>
+
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>label</mat-label>
+                <input matInput type="text" formControlName="label"/>
+              </mat-form-field>
+
+
+              <mat-form-field appearance="outline">
+                <mat-label>type</mat-label>
+             <mat-select formControlName="formtype">
+               <mat-option *ngFor="let option of options" [value]="option">{{option}}</mat-option>
+             </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>placeholder</mat-label>
+                <input matInput type="text" formControlName="placeholder">
+              </mat-form-field>
+
+
+              <mat-form-field appearance="outline">
+                <mat-label>value type</mat-label>
+                <input matInput type="text" formControlName="valuetype">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>order</mat-label>
+                <input matInput type="text" formControlName="order">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>default Value</mat-label>
+                <input matInput type="text" formControlName="defaultValue">
+              </mat-form-field>
+              <mat-form-field appearance="outline" *ngIf="fieldForm.value.formtype === 'select'">
+                <mat-label>options</mat-label>
+                <input matInput type="text" formControlName="options">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Form Field appearance</mat-label>
+                <mat-select formControlName="appearance">
+                  <mat-option value="outline">Outline</mat-option>
+                  <mat-option value="standard">Standard</mat-option>
+                  <mat-option value="fill">Fill</mat-option>
+                  <mat-option value="legacy">Legacy</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Icon</mat-label>
+                <input matInput type="text" formControlName="icon">
+              </mat-form-field>
+
+              <mat-form-field *ngIf="fieldForm.value.icon" appearance="outline">
+                <mat-label>Icon Location</mat-label>
+               <mat-select formControlName="iconLocation">
+                 <mat-option value="before">before</mat-option>
+                 <mat-option value="after">after</mat-option>
+               </mat-select>
+              </mat-form-field>
+
+
+
+              <mat-form-field  appearance="outline">
+                <mat-label>Hint</mat-label>
+               <input matInput formControlName="hint" />
+              </mat-form-field>
+
+              <mat-form-field  appearance="outline">
+                <mat-label>Error</mat-label>
+               <mat-select matInput formControlName="required">
+                 <mat-option value=true>Yes</mat-option>
+                 <mat-option value=false>No</mat-option>
+               </mat-select>
+              </mat-form-field>
+              <mat-form-field  appearance="outline" *ngIf="fieldForm.value.required === 'true'">
+                <mat-label>Error</mat-label>
+               <input matInput formControlName="error" />
+              </mat-form-field>
+
+
+
+            </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <button mat-raised-button (click)="addFields(i)">Add Field</button>
+     <button type="button"  mat-raised-button (click)="displayForm(i)"> Update</button>
+     <h4>Form Preview</h4>
+    <app-form [model]="form"></app-form>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+

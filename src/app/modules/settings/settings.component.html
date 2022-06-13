@@ -1,0 +1,73 @@
+<section class="card-container">
+  
+<mat-accordion *ngIf="(sidebarSetting$s | async) as sidebarSettings" class="card">
+  <mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>Side Bar Settings</mat-panel-title>
+    <mat-panel-description><mat-icon>view_sidebar</mat-icon></mat-panel-description>
+  </mat-expansion-panel-header>
+    <div class="expansion-body">
+      <mat-form-field appearance="outline">
+        <mat-label>Sidebar mode</mat-label>
+        <mat-select [(ngModel)]="sidebarSettings.mode"
+        (selectionChange)="changeSidenav(sidebarSettings)">
+          <mat-option value="side">Aside Content</mat-option>
+          <mat-option value="over">Over Content</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="!sidebarSettings!.handset" appearance="outline">
+        <mat-label>Sidebar Position</mat-label>
+        <mat-select
+          [(ngModel)]="sidebarSettings.position"
+          (selectionChange)="changeSidenav(sidebarSettings)"
+        >
+          <mat-option value="sidenav-left-side">Left (default)</mat-option>
+          <mat-option value="sidenav-right-side">right</mat-option>
+          <mat-option value="sidenav-bottom">bottom</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>
+
+<mat-accordion  class="card">
+  <mat-expansion-panel class="expansion-panel">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Create Models</mat-panel-title>
+      <mat-panel-description><mat-icon>data_object</mat-icon></mat-panel-description>
+    </mat-expansion-panel-header>
+    <div class="expansion-body">
+      <lib-create-models></lib-create-models>
+     </div>
+  </mat-expansion-panel>
+
+
+</mat-accordion>
+
+<mat-accordion class="card">
+  <mat-expansion-panel>
+
+  <mat-expansion-panel-header>
+    <mat-panel-title>Create lists of Values</mat-panel-title>
+    <mat-panel-description><mat-icon>list</mat-icon></mat-panel-description>
+  </mat-expansion-panel-header>
+    <div class="expansion-body">
+    <app-lov [lovClass]="lovClass" [lovForm]="lovForm"></app-lov>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>
+
+<mat-accordion class="card">
+  <mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>Create and edit forms</mat-panel-title>
+    <mat-panel-description><mat-icon>dynamic_form</mat-icon></mat-panel-description>
+  </mat-expansion-panel-header>
+    <div class="expansion-body">
+    <app-form-edit [testForms]="formEditForms$"></app-form-edit>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>
+
+</section>

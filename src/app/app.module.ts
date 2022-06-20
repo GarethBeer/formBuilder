@@ -15,12 +15,13 @@ import { SharedModule } from './modules/shared.module';
 
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
     NavComponent,
     ToolbarComponent,
-    ShellComponent
+    ShellComponent,
   ],
   imports: [
     BrowserModule,

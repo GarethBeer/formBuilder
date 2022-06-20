@@ -1,5 +1,5 @@
 <section class="card-container">
-  
+
 <mat-accordion *ngIf="(sidebarSetting$s | async) as sidebarSettings" class="card">
   <mat-expansion-panel>
   <mat-expansion-panel-header>
@@ -41,13 +41,10 @@
       <lib-create-models></lib-create-models>
      </div>
   </mat-expansion-panel>
-
-
 </mat-accordion>
 
 <mat-accordion class="card">
   <mat-expansion-panel>
-
   <mat-expansion-panel-header>
     <mat-panel-title>Create lists of Values</mat-panel-title>
     <mat-panel-description><mat-icon>list</mat-icon></mat-panel-description>

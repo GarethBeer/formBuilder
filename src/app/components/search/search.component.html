@@ -1,0 +1,11 @@
+<form>
+<mat-form-field [appearance]="appearance">
+    <mat-label>Search For Customer</mat-label>
+    <input matInput [matAutocomplete]="auto" [formControl]="inputControl"/>
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let customer of arr | inputFilterPipe:inputControl.value; let i = index" [value]="customer.customer_first_name" (click)="submitValueFunc(customer)">{{customer.customer_first_name}}
+      </mat-option>
+    </mat-autocomplete>
+    <mat-icon matSuffix *ngIf="inputControl.value" color="primary" (click)="clearControl()">cancel</mat-icon>
+  </mat-form-field>
+</form>

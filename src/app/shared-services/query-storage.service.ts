@@ -7,8 +7,24 @@ export class QueryStorageService {
 
   constructor(private http: HttpClient) { }
 
-  getBlob = ():Observable<any> => {
-    return this.http.get('api/blob/classes')
+  getBlob = (blob: string, container: string):Observable<any> => {
+    return this.http.get(`api/getBlob`,
+      {
+        params: new HttpParams()
+          .set('id', blob)
+          .set('container', container)
+      })
   }
+
+  listBlobs = (container: string):Observable<any> => {
+    return this.http.get(`api/blob-list/${container}`)
+  }
+
+
+  listContainers = () => {
+    return this.http.get(`api/container-list`)
+  }
+
+
 
 }

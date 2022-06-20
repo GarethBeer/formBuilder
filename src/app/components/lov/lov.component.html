@@ -8,7 +8,7 @@
 
 <mat-tab-group>
   <mat-tab *ngFor="let lov of lookups$ | async" [label]="lov.Id">
-    <app-form [formname]="'lov'" [model]="lovForm" *ngIf="displayForm" [style]="'row'"(submit)="handleSubmits($event, lov.Id)"></app-form>
+   <!--  <app-form [formname]="'lov'" [model]="lovForm" *ngIf="displayForm" [style]="'row'"(submit)="handleSubmits($event, lov.Id)"></app-form> -->
     <ng-container *ngIf="lov.values.length > 0">
       <form *ngFor="let value of lov.values| formPipe; let i = index " [formGroup]="value" class="lov-fields row">
         <ng-container *ngFor="let control of value.controls | keyvalue">

@@ -8,28 +8,30 @@
       <input matInput formControlName="key"
       [matAutocomplete]="autoModels"/>
       <mat-autocomplete #autoModels>
-        <mat-option *ngFor="let model of models$ | async" [value]="model.Id">{{model.Id}}</mat-option>
+        <mat-option *ngFor="let model of classes$ | async" [value]="model.Id">{{model.Id}}</mat-option>
       </mat-autocomplete>
     </mat-form-field>
-  <button type="button" mat-raised-button (click)="createForm()">Generate Form</button>
+  <button type="button" mat-raised-button (click)="createForm()">Generate a Form</button>
 </form>
 
 
    <mat-tab-group >
-    <mat-tab *ngFor="let form of forms; let i = index" [label]="form.value.key">
+    <mat-tab *ngFor="let form of forms$ | async; let i = index" [label]="form.value.key">
       <h3 >{{form.value.key}}</h3>
       <form [formGroup]="form">
         <p>Field details</p>
         <mat-form-field>
           <mat-label>Styles</mat-label>
-          <mat-select formControlName="style">
+          <mat-select formControlName="style" multiple>
             <mat-option value='style1'>style1</mat-option>
             <mat-option value='style2'>style2</mat-option>
             <mat-option value='style3'>style3</mat-option>
+            <mat-option value='col'>column</mat-option>
+            <mat-option value='row'>row</mat-option>
           </mat-select>
         </mat-form-field>
-        <div formArrayName="fields">
-          <div *ngFor="let fieldForm of form.controls.fields.controls; let i = index">
+        <div formArrayName="fields" class="fields-container">
+          <div *ngFor="let fieldForm of form.controls.fields.controls; let i = index" class="card">
             <div [formGroupName]="i">
               <div class="row">
               <mat-form-field appearance="outline" >
@@ -68,10 +70,11 @@
                 <mat-label>default Value</mat-label>
                 <input matInput type="text" formControlName="defaultValue">
               </mat-form-field>
-              <mat-form-field appearance="outline" *ngIf="fieldForm.value.formtype === 'select'">
+              <mat-form-field appearance="outline" *ngIf="fieldForm.value.formtype === 'select' || fieldForm.value.formtype === 'radio'">
                 <mat-label>options</mat-label>
                 <input matInput type="text" formControlName="options">
               </mat-form-field>
+              
               <mat-form-field appearance="outline">
                 <mat-label>Form Field appearance</mat-label>
                 <mat-select formControlName="appearance">
@@ -124,7 +127,7 @@
       <button mat-raised-button (click)="addFields(i)">Add Field</button>
      <button type="button"  mat-raised-button (click)="displayForm(i)"> Update</button>
      <h4>Form Preview</h4>
-    <app-form [model]="form"></app-form>
+<!--     <app-form [data]="form" [cls]="classes" [style]="'col'"></app-form> -->
     </mat-tab>
   </mat-tab-group>
 </div>

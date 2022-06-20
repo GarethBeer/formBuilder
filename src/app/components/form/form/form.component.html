@@ -1,10 +1,10 @@
-<!-- <div *ngFor="let model of data | async"> -->
-  <form [formGroup]="model.form" [ngClass]="['form', model.model.style]" *ngIf="model">
-<!--     <h6>{{ model.Id }}</h6> -->
-    <ng-container *ngFor="let fields of model.model.fields">
+<section class="section col" *ngIf="combined">
+  <form [formGroup]="combined.form" [ngClass]="['form']">
+    <ng-container *ngFor="let fields of combined.model.fields">
       <ng-container
         *ngIf="
-          fields.key !== 'Id' && fields.key !== 'type'
+          (fields.key !== 'Id' && fields.key !== 'type') && (fields.order === 0 ||
+          combined.form.value[combined.model.fields[fields.order - 1]?.key] !== '')
         "
         [ngSwitch]="fields.matformfield"
       >
@@ -21,6 +21,7 @@
             [formControlName]="fields.key"
             autocomplete="off"
             [name]="fields.key"
+            [type]="fields.valuetype"
           />
           <textarea
             matInput
@@ -37,7 +38,7 @@
             [multiple]="fields.defaultValue && fields.defaultValue.length > 1 ? true : false"
           >
             <mat-option
-              *ngFor="let option of fields.options"
+              *ngFor="let option of fields.options | stringtoarray"
               [value]="option"
               >{{ option }}</mat-option
             >
@@ -76,7 +77,7 @@
             <div *ngSwitchCase="'checkbox'">
               <mat-label>{{ fields.label }}</mat-label>
               <div class="row">
-                <p *ngFor="let option of fields.options" class="row">
+                <p *ngFor="let option of fields.options | stringtoarray" class="row">
                   <mat-checkbox [formControlName]="fields.key">{{
                     option
                   }}</mat-checkbox>
@@ -86,7 +87,7 @@
             <div *ngSwitchCase="'radio'">
               <mat-label>{{ fields.label }}</mat-label>
               <div class="row">
-                <ng-container *ngFor="let option of fields.options">
+                <ng-container *ngFor="let option of fields.options | stringtoarray">
                   <p>{{ option }}</p>
                   <input
                     type="radio"
@@ -96,15 +97,14 @@
                 </ng-container>
               </div>
             </div>
-
-          <!--   <ng-container *ngSwitchCase="'button'">
-            <button mat-raised-button *ngIf="submitButton"  type="button"[id]="fields.key" [color]="fields.properties.appearance" (click)="onSubmit(model)">{{fields.properties.label}}</button>
-          </ng-container> -->
           </div>
         </div>
       </ng-container>
     </ng-container>
-    <button mat-raised-button   type="button" (click)="onSubmit(model)">Submit</button>
+    <ng-container *ngFor="let children of combined.model.children">
+      <app-form [data]="children.data" [formTemplate]="children.template" [cls]="children.cls"[displayButton]="false" [form]="combined.form" [parent]="combined.model.key"></app-form>
+    </ng-container>
   </form>
-<!-- </div> -->
+  <button *ngIf="displayButton" mat-raised-button color="primary"  type="button" (click)="onSubmit(combined)">Submit</button>
+</section>
 

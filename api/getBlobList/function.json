@@ -5,7 +5,7 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "route": "blob/{id}",
+      "route": "blob-list/{id}",
       "methods": [
         "get"
       ]
@@ -14,15 +14,7 @@
       "type": "http",
       "direction": "out",
       "name": "res"
-    },
-    {
-      "type": "blob",
-      "direction": "in",
-      "name": "getBlob",
-      "path": "classes/{id}",
-      "connection": "AZURE_STORAGE_CONNECTION_STRING"
     }
   ],
-  "scriptFile": "../dist/getStorage/index.js"
+  "scriptFile": "../dist/getBlobList/index.js"
 }
-

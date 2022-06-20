@@ -1,0 +1,10 @@
+form {
+    width:100%;
+    padding:0.5ren;
+
+    .mat-icon {
+    &:hover {
+      cursor: pointer;
+    }
+    }
+}

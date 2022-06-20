@@ -18,6 +18,12 @@ export class AppService {
     this.userDetails_.next(obj)
   }
 
+  private customers_: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([])
+  readonly customers$: Observable<any[]> = this.customers_.asObservable()
+
+  set customers(customers:any[]) {
+    this.customers_.next(customers);
+  }
 
   constructor() { }
 

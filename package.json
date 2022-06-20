@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "build": "ng build",
+    "build:watch": "ng build --watch",
     "start:dev": "ng build && swa start ./dist/test1",
     "start:api": "ng build && swa start ./dist/test1 --api-location ./api",
+    "start:prebuild": "swa start ./dist/test1 --api-location ./api",
     "test": "ng test --code-coverage",
     "lint": "ng lint --fix"
   },
@@ -34,7 +36,7 @@
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
     "@types/uuid": "^8.3.4",
-    "create-models": "1.0.6",
+    "create-models": "1.0.7",
     "husky": "latest",
     "jasmine-core": "~4.0.0",
     "karma": "~6.3.0",

@@ -15,13 +15,12 @@ import { v4 as uuid } from 'uuid';
 export class LovComponent implements OnInit, OnChanges {
   @Input() lovClass: any;
   @Input() lovForm: any;
+
   // state
   public displayForm: boolean = true;
   public lovName: string = '';
   public displayAttributes: any[] = []
-
   public forms: FormGroup[] = []
-
 
   // behavior subjects
   private readonly lookups_: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([])
@@ -29,14 +28,10 @@ export class LovComponent implements OnInit, OnChanges {
 
   // observables
   readonly lookups$: Observable<any> = this.lookups_.asObservable();
-
   forms$: Observable<any> = this.forms_.asObservable();
 
 
-
-
   constructor(private formService: FormService, private fb: FormBuilder) {
-
   }
 
 ngOnChanges(changes: SimpleChanges): void {
@@ -46,7 +41,6 @@ ngOnChanges(changes: SimpleChanges): void {
       Object.keys(model).forEach((k) => model[k] = val[k])
       return model
     }))
-    console.log(this.lookups_.getValue())
   }
 }
 

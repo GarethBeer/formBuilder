@@ -8,12 +8,16 @@ import { LovComponent } from '../components/lov/lov.component'
 import { FormComponent } from '../components/form/form/form.component';
 import { FormEditComponent } from '../components/form-edit/form-edit.component';
 import { FormPipe } from '../pipes/form-pipe.pipe';
+import { InputFilterPipe } from '../pipes/input-filter.pipe';
+import { SearchComponent } from '../components/search/search.component';
+import { StringtoarrayPipe } from '../pipes/stringtoarray.pipe';
+
 
 
 @NgModule({
   imports: [MaterialModule, ReactiveFormsModule, CommonModule, FormsModule,FormLibraryModule],
-  exports: [MaterialModule, ReactiveFormsModule, CommonModule, FormsModule, FormLibraryModule, LovComponent, FormComponent, FormEditComponent,FormPipe],
-  declarations: [LovComponent, FormComponent, FormEditComponent, FormPipe],
+  exports: [MaterialModule, ReactiveFormsModule, CommonModule, FormsModule, FormLibraryModule, LovComponent, FormComponent, FormEditComponent,FormPipe, InputFilterPipe, SearchComponent, StringtoarrayPipe],
+  declarations: [LovComponent, FormComponent, FormEditComponent, FormPipe,InputFilterPipe, SearchComponent,StringtoarrayPipe],
   providers: [],
 })
 export class SharedModule { }

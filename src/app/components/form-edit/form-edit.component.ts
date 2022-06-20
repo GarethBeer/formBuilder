@@ -9,7 +9,7 @@ export class Field {
   key: string = '';
   label: string = '';
   formtype: string = 'input';
-  valuetype: string = '';
+  valuetype: string = 'text';
   order: number = 0;
   matformfield: string = 'true';
   /* properties: Properties = new Properties() */
@@ -44,22 +44,27 @@ export class FormEditComponent implements OnInit, OnChanges {
   @Input()
   testForms!: Observable<any>;
   // state
+  forms$: Observable<any>;
   forms: any[] = [];
   createFormForm = new FormGroup({});
   options: string[] = ['input', 'radio', 'select', 'textarea', 'checkbox'];
-  models$: Observable<any[]>;
-  models: any[] = [];
+  classes$: Observable<any[]>;
+  classes: any[] = [];
   field: Field = new Field();
   data: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
 
   constructor(private fb: FormBuilder, private formService: FormService, private classesService: CreateModelsService) {
-    this.models$ = this.classesService.classes$.pipe(tap(cls => this.models = cls));
+    this.classes$ = this.classesService.classes$.pipe(tap(cls => this.classes = cls));
     this.field = new Field()
     this.createFormForm = this.fb.group({
       key: '',
       style: '',
       fields: new FormArray([]),
     });
+    this.forms$ = this.formService.data$.pipe(tap(data => {
+      console.log(data)
+      this.forms = data
+    }));
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -69,90 +74,59 @@ export class FormEditComponent implements OnInit, OnChanges {
 
 
   createForm = () => {
-    const model = this.models.find((model) => model.Id === this.createFormForm.value.key)
-    if (model) {
-      const fields = this.createFormForm.get('fields') as FormArray;
-      Object.keys(model).forEach((k: string) => {
-        if (k !== 'Id' && k !== 'type') {
-          this.field.key = k;
-          this.field.defaultValue = model[k];
-          this.field.label = k;
-          fields.push(this.fb.group(this.field))
-          this.field = new Field();
-        }
-      })
+    const cls = this.classes.find((cls) => cls.Id === this.createFormForm.value.key);
+    let model = this.createFormForm;
+    if (cls) {
+       model = this.formService.createNewFormModel(cls)
     }
-    console.log(this.createFormForm)
-    this.forms.push(this.createFormForm);
+
+    this.formService.formTemplate =  model
     this.createFormForm = this.fb.group({
       key: '',
       style: '',
       fields: new FormArray([]),
+      children: [],
     });
   };
 
   addFields = (ind: number) => {
     const form = this.forms[ind] as FormGroup;
     const arr = form.get('fields') as FormArray;
-    const field = {...this.field}
-
     arr.push(this.fb.group(this.field) as FormGroup)
-    console.log(arr)
   };
 
   displayForm = (index: number) => {
-    const currForm = {...this.forms[index].value}
-    currForm.fields.forEach((field: Field) => {
-      if (field.order) {
-        field.order = Number(field.order)
-      }
-      if (field.valuetype === 'array' && typeof field.options === 'string') {
-        field.options = field.options.split(',')
-      }
-    })
-
+    const currForm = { ...this.forms[index].value }
 
     currForm.fields = currForm.fields.sort((a: any, b: any) => {
       return a.order - b.order
     })
 
-
-    let newObj: any = {
-      Id:currForm.key,
-      model: currForm,
-      form: this.createFormForObject(currForm)
-    }
     const newForm = this.fb.group({
       key: currForm.key,
       style: currForm.style,
-      fields: new FormArray([])
+      fields: new FormArray([]),
+      children: new FormControl()
     })
 
     const fields = newForm.get('fields') as FormArray;
+    const children = newForm.get('children') as FormControl;
 
-    currForm.fields.forEach((field:any) => {
+    children.setValue([...currForm.children])
+    currForm.fields.forEach((field: any, index: number) => {
+      if (field.order) {
+        field.order = Number(field.order)
+      }
+      if (field.formtype === 'radio' || field.formtype === 'checkbox') {
+        field.matformfield = ''
+      }
       fields.push(this.fb.group(field))
     })
 
 
-    console.log(currForm)
-      this.forms.splice(index,1, newForm)
-
-/*
-this.data.next([...this.data.getValue(), newObj])
-    console.log(newObj)
-    console.log(this.data.getValue()) */
+    this.formService.formTemplate = newForm;
+    console.log(this.formService.formTemplates, 'FORMEDIT')
   };
-
-  createFormForObject = (currentForm: any) => {
-    let form: FormGroup = new FormGroup({});
-    currentForm.fields.forEach((field: Field) => {
-      console.log('here')
-      form.addControl(field.key, new FormControl(field.defaultValue))
-    })
-    return form
-  }
-
 
 
   ngOnInit(): void {

@@ -14,19 +14,17 @@ import { FormBuilder } from '@angular/forms';
 })
 export class SettingsComponent implements OnDestroy,OnInit {
   // state
-  formFieldAppearance = "outline"
+  public lovClass: any;
+  public lovForm: any;
 
+  // behavior subjects
+  private formEditForms_: BehaviorSubject<any> = new BehaviorSubject([]);
 
   // observables
   public readonly sidebarSetting$s: Observable<SideNavSettings>;
-  public lovClass: any;
-  public lovForm: any;
-  private formEditForms_: BehaviorSubject<any> = new BehaviorSubject([]);
   public formEditForms$: Observable<any> = this.formEditForms_.asObservable().pipe(map(res => res ? res.modelForm : res));
-  /* public readonly forms: Observable<any>; */
 
   // subscriptions
-
   private classSubscription: Subscription;
 
    // component lifecycle functions
@@ -39,13 +37,19 @@ export class SettingsComponent implements OnDestroy,OnInit {
     this.sidebarSetting$s = this.sidebarService.toggleSideBar$;
     this.classesService.classEvents$.subscribe((data: any) => {
     })
+
     this.classSubscription = this.classesService.classes$.subscribe((cls) => {
+      console.log(cls, 'SETTINGS COMPONENT')
       if (cls.length > 0) {
-        this.lovClass = cls.find((cl: any) => cl.Id === 'lov');
-        this.lovClass ? this.lovForm = this.formService.createFormAndModel(this.lovClass, 'lov') : null;
+
 
         cls.forEach((cl) => {
-          this.formEditForms_.next([...this.formEditForms_.getValue(),this.formService.createFormAndModel(cl, cl.Id)])
+          if (cl.Id === 'lov') {
+            this.lovClass = cl;
+            this.lovForm = this.formService.createFormAndModel(cl, 'lov')
+          }
+
+          /* this.formEditForms_.next([...this.formEditForms_.getValue(),this.formService.createFormAndModel(cl, cl.Id)]) */
     })
       }
 
@@ -59,7 +63,6 @@ export class SettingsComponent implements OnDestroy,OnInit {
   };
 
   ngOnInit(): void {
-    this.classesService.classes = data.classes;
 
   }
 

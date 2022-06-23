@@ -9,11 +9,14 @@ import { debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
   styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnDestroy {
-  @Input() arr: any[] = [];
-  @Input() appearance: MatFormFieldAppearance = 'outline'
-  inputControl: FormControl = new FormControl('');
-  inputSubscription: Subscription;
-  @Output() submitValue: EventEmitter<any> = new EventEmitter();
+
+  @Input() public arr: any[] = [];
+  @Input() public appearance: MatFormFieldAppearance = 'outline'
+  @Input() public fieldLabel: string = 'Search'
+  @Input() public fieldToDisplay: string = ''
+  public inputControl: FormControl = new FormControl('');
+  private inputSubscription: Subscription;
+  @Output() public submitValue: EventEmitter<any> = new EventEmitter();
 
   constructor() {
     this.inputSubscription = this.inputControl.valueChanges.pipe(debounceTime(200), distinctUntilChanged()).subscribe((input: string) => {
@@ -22,11 +25,11 @@ export class SearchComponent implements OnDestroy {
       }
     })
   }
-  submitValueFunc = (value:any) => {
+  public submitValueFunc = (value: any):void => {
     this.submitValue.emit(value)
   }
 
-  clearControl = () => {
+  public clearControl = (): void => {
     this.inputControl.setValue('');
     this.submitValue.emit(null)
   }

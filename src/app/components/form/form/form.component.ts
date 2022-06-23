@@ -23,6 +23,8 @@ export class FormComponent implements OnChanges {
 
   @Input() form: any;
   @Input() parent: string = '';
+  @Input() array: boolean = false;
+  @Input() index: number = 0;
 
   public combined: any;
 
@@ -51,9 +53,10 @@ export class FormComponent implements OnChanges {
 
     if (this.data) {
       this.combined = this.formService.createFormAndModel(this.data, this.cls ? this.cls : this.classesArr.find((cl) => cl.Id === this.data.Id));
+      this.combined.model.fields.forEach((el:any) => el.formtype === 'button' ? el.placeholder = this.add : null)
     }
     if (this.parent && this.form) {
-      this.combined.form = this.form.get(`${this.parent}_${this.data.Id}`)
+      this.combined.form = this.array ?this.form.get(`${this.parent}_${this.data.Id}`).controls[this.index] : this.form.get(`${this.parent}_${this.data.Id}`)
     }
     console.log(this.combined)
   }
@@ -64,13 +67,16 @@ export class FormComponent implements OnChanges {
     } else {
       this.submit.emit(this.combined.form.value)
     }
+  }
 
+  add = () => {
+    console.log('add called')
   }
 
   checkValidatedFields = () => {
     const list:string[] = []
     this.combined.model.fields.forEach((field:Field) => {
-      if (field.required === 'true' && !this.combined.form[field.key]) {
+      if (field.required === 'true' && !this.combined.form.value[field.key]) {
         list.push(`${field.label} required`);
       }
     })

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormArray, FormBuilder, FormControl } from '@angular/forms';
 import { CreateModelsService } from 'create-models';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
@@ -22,6 +22,8 @@ export class Field {
   required: string = 'false';
   error: string = '';
   placeholder: string = '';
+  max: number = 100;
+  min: number = 1;
 }
 
 export class Properties {
@@ -40,14 +42,13 @@ export class Properties {
   templateUrl: './form-edit.component.html',
   styleUrls: ['./form-edit.component.scss']
 })
-export class FormEditComponent implements OnInit, OnChanges {
-  @Input()
-  testForms!: Observable<any>;
+export class FormEditComponent implements OnInit {
+
   // state
   forms$: Observable<any>;
   forms: any[] = [];
   createFormForm = new FormGroup({});
-  options: string[] = ['input', 'radio', 'select', 'textarea', 'checkbox'];
+  options: string[] = ['input', 'radio', 'select', 'textarea', 'checkbox', 'button'];
   classes$: Observable<any[]>;
   classes: any[] = [];
   field: Field = new Field();
@@ -58,7 +59,7 @@ export class FormEditComponent implements OnInit, OnChanges {
     this.field = new Field()
     this.createFormForm = this.fb.group({
       key: '',
-      style: '',
+      style: 'form',
       fields: new FormArray([]),
     });
     this.forms$ = this.formService.data$.pipe(tap(data => {
@@ -67,9 +68,7 @@ export class FormEditComponent implements OnInit, OnChanges {
     }));
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes)
-  }
+
 
 
 
@@ -83,7 +82,7 @@ export class FormEditComponent implements OnInit, OnChanges {
     this.formService.formTemplate =  model
     this.createFormForm = this.fb.group({
       key: '',
-      style: '',
+      style: 'form',
       fields: new FormArray([]),
       children: [],
     });
@@ -97,14 +96,14 @@ export class FormEditComponent implements OnInit, OnChanges {
 
   displayForm = (index: number) => {
     const currForm = { ...this.forms[index].value }
-
+    console.log(currForm, 'CURRFORM')
     currForm.fields = currForm.fields.sort((a: any, b: any) => {
       return a.order - b.order
     })
 
     const newForm = this.fb.group({
       key: currForm.key,
-      style: currForm.style,
+      style: currForm.style ? JSON.parse(currForm.style) : {},
       fields: new FormArray([]),
       children: new FormControl()
     })
@@ -117,9 +116,10 @@ export class FormEditComponent implements OnInit, OnChanges {
       if (field.order) {
         field.order = Number(field.order)
       }
-      if (field.formtype === 'radio' || field.formtype === 'checkbox') {
+      if (field.formtype === 'radio' || field.formtype === 'checkbox' || field.formtype === 'button') {
         field.matformfield = ''
       }
+
       fields.push(this.fb.group(field))
     })
 

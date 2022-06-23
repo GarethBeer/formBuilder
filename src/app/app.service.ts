@@ -25,6 +25,10 @@ export class AppService {
     this.customers_.next(customers);
   }
 
+  set customer(customer: any) {
+    this.customers_.next([...this.customers_.getValue(), customer])
+  }
+
   constructor() { }
 
 }

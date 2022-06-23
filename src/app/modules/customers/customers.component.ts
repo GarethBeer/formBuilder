@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CreateModelsService } from 'create-models';
 import { Observable, tap } from 'rxjs';
@@ -10,7 +10,7 @@ import { FormService } from 'src/app/components/form/form.service';
   templateUrl: './customers.component.html',
   styleUrls: ['./customers.component.scss'],
 })
-export class CustomersComponent {
+export class CustomersComponent implements OnDestroy {
   customers$: Observable<any>;
   viewCustomerDetails: any = null;
   customerClass: any = null;
@@ -23,7 +23,7 @@ export class CustomersComponent {
     private formService: FormService,
     private classesService: CreateModelsService
   ) {
-    this.customers$ = this.appService.customers$;
+    this.customers$ = this.appService.customers$.pipe(tap(data => console.log(data)));
     this.classesService.classes$.subscribe((data: any) => {
       if (!this.customerClass) {
         this.customerClass = data?.find((cl: any) => cl.Id === 'customer');
@@ -53,5 +53,13 @@ export class CustomersComponent {
     }
 
     this.newForm = true;
+  }
+
+  submit = (data: any) => {
+    this.appService.customer = data
+    console.log(data)
+  }
+  ngOnDestroy(): void {
+
   }
 }

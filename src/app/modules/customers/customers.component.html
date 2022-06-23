@@ -2,7 +2,7 @@
   <mat-tab-group>
     <mat-tab label="View Customers">
   <section class="section search">
-<app-search [arr]="customers$ | async" [appearance]="'fill'" (submitValue)="viewCustomer($event)"></app-search>
+<lib-ngx-search-field [arr]="customers$ | async" [appearance]="'outline'" (submitValue)="viewCustomer($event)" [fieldToDisplay]="'customer_first_name'" [fieldLabel]="'Search Customers'"></lib-ngx-search-field>
 
   <app-form *ngIf="customer" [data]="customer" [cls]="customerClass" [formTemplate]="model"></app-form>
 </section>
@@ -10,7 +10,7 @@
 <mat-tab label="Create Customers">
 <section class="section">
   <button mat-raised-button color="primary" (click)="addCustomer()">Add Customer</button>
-  <app-form *ngIf="newForm" [data]="customerClass" [cls]="customerClass" [formTemplate]="model"></app-form>
+  <app-form *ngIf="newForm" [data]="customerClass" [cls]="customerClass" [formTemplate]="model" (submit)="submit($event)"></app-form>
 </section>
 </mat-tab>
 </mat-tab-group>

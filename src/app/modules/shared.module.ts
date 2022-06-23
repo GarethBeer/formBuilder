@@ -11,13 +11,14 @@ import { FormPipe } from '../pipes/form-pipe.pipe';
 import { InputFilterPipe } from '../pipes/input-filter.pipe';
 import { SearchComponent } from '../components/search/search.component';
 import { StringtoarrayPipe } from '../pipes/stringtoarray.pipe';
+import { TypeofPipe } from '../pipes/typeof.pipe';
 
 
 
 @NgModule({
   imports: [MaterialModule, ReactiveFormsModule, CommonModule, FormsModule,FormLibraryModule],
-  exports: [MaterialModule, ReactiveFormsModule, CommonModule, FormsModule, FormLibraryModule, LovComponent, FormComponent, FormEditComponent,FormPipe, InputFilterPipe, SearchComponent, StringtoarrayPipe],
-  declarations: [LovComponent, FormComponent, FormEditComponent, FormPipe,InputFilterPipe, SearchComponent,StringtoarrayPipe],
+  exports: [MaterialModule, ReactiveFormsModule, CommonModule, FormsModule, FormLibraryModule, LovComponent, FormComponent, FormEditComponent,FormPipe, InputFilterPipe, SearchComponent, StringtoarrayPipe, TypeofPipe],
+  declarations: [LovComponent, FormComponent, FormEditComponent, FormPipe,InputFilterPipe, SearchComponent,StringtoarrayPipe, TypeofPipe],
   providers: [],
 })
 export class SharedModule { }

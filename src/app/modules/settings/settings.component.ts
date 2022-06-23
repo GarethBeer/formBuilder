@@ -46,10 +46,8 @@ export class SettingsComponent implements OnDestroy,OnInit {
         cls.forEach((cl) => {
           if (cl.Id === 'lov') {
             this.lovClass = cl;
-            this.lovForm = this.formService.createFormAndModel(cl, 'lov')
+            this.lovForm = this.formService.createFormAndModel(cl, cl)
           }
-
-          /* this.formEditForms_.next([...this.formEditForms_.getValue(),this.formService.createFormAndModel(cl, cl.Id)]) */
     })
       }
 

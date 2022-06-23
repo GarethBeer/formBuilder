@@ -9,6 +9,7 @@ import {
 import { CreateModelsService } from 'create-models';
 /* import { Form, FormField } from 'rodev-form-library'; */
 import { BehaviorSubject, Observable } from 'rxjs';
+import { hasOwnProperty } from 'src/app/utils/utils';
 import { Field } from '../form-edit/form-edit.component';
 
 export class FormField {
@@ -18,7 +19,6 @@ export class FormField {
   valuetype: string = '';
   order: number = 0;
   matformfield: string = 'true';
-  /* properties: Properties = new Properties() */
   defaultValue: string = '';
   options: string | string[] = '';
   appearance: string = 'outline';
@@ -28,6 +28,8 @@ export class FormField {
   required: string = 'false';
   error: string = '';
   placeholder: string = '';
+  max: number = 150;
+  min: number = 1;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -64,25 +66,39 @@ export class FormService {
 
   constructor(
     private fb: FormBuilder,
-    private classesService: CreateModelsService,
-    private formService: FormService
+    private classesService: CreateModelsService
   ) {}
 
   // functions
   createNewFormModel = (data: any): FormGroup => {
+    console.log(data, 'DATA')
     const formModel: any = {};
     const children: any[] = [];
+    const childArr:any[] = []
 
     formModel.key = data.Id || '';
     formModel.style = data?.style || '';
     formModel.fields = new FormArray([]);
     formModel.children = new FormControl([]);
+    formModel.childArr = new FormControl([]);
+
     const form = this.fb.group({ ...formModel });
     const fields = form.get('fields') as FormArray;
+
     Object.entries(data).forEach((item: any) => {
-      if (typeof item[1] === 'object') {
+
+      if (typeof item[1] === 'object' && !Array.isArray(item[1])) {
+        console.log(item)
         children.push(this.createChild(item[1]));
-      } else {
+      } else if (Array.isArray(item[1])) {
+        const arr:any = []
+        item[1].forEach((el) => {
+          console.log(el)
+          arr.push(this.createChild(el))
+        })
+        children.push(arr)
+      }
+      else {
         fields.push(this.fb.group({ ...this.createField(item, data.Id) }));
       }
     });
@@ -103,56 +119,44 @@ export class FormService {
     }
     return field;
   };
-/*
-  createFormForm = (formModel: any) => {
-    console.log(formModel);
-    const { fields, children } = formModel;
-    const formGroup = this.fb.group({});
-    fields.forEach((field: any) => {
-      if (field.required === 'true') {
-        formGroup.addControl(
-          field.key,
-          new FormControl(field.defaultValue, Validators.required)
-        );
-      } else {
-        formGroup.addControl(field.key, new FormControl(field.defaultValue));
-      }
-    });
-    children.forEach((child: any) => {
-      formGroup.addControl(child.Id, child.form);
-    });
-    return formGroup;
-  }; */
 
-  createFormFromObject = (obj: any, cls: any, model:any =null): FormGroup => {
+  addingValidators = (field: any): Validators[] => {
+    const validators: Validators[] = [];
+    if (field.valuetype === 'phone') {
+      validators.push(Validators.minLength(11));
+      /* validators.push(Validators.pattern('[0-9]')) */
+    }
+    if (field.required === 'true') {
+      validators.push(Validators.required);
+    }
+    return validators;
+  };
+
+  createFormFromObject = (obj: any, cls: any, model: any = null): FormGroup => {
     const formGroup = new FormGroup({});
     Object.keys(cls ? cls : obj).forEach((k) => {
-      if (typeof obj[k] === 'string') {
+      if (typeof cls[k] === 'string') {
         if (model) {
           const field = model.fields.find((field: Field) => field.key === k);
-          field?.required === 'true' ? formGroup.addControl(k, new FormControl(obj[k], Validators.required)) : formGroup.addControl(k, new FormControl(obj[k]));
+          const validators: Validators = this.addingValidators(field);
+          formGroup.addControl(k, new FormControl(obj[k], validators));
         } else {
           formGroup.addControl(k, new FormControl(obj[k]));
         }
-      } else if (Array.isArray(obj[k]) || Array.isArray(cls[k])) {
+      } else if (Array.isArray(cls[k])) {
         const formArray = new FormArray([]);
         if (obj[k]) {
           obj[k].forEach((el: any) => {
             formArray.push(this.createFormFromObject(el, cls[k][0]));
           });
-        } else {
-          cls[k].forEach((el: any) => {
-            formArray.push(this.createFormFromObject(el, el));
-          });
+
         }
+        formGroup.addControl(k,formArray)
       } else if (typeof obj[k] === 'object' || typeof cls[k] === 'object') {
         if (obj[k]) {
           formGroup.addControl(k, this.createFormFromObject(obj[k], cls[k]));
         } else {
-          formGroup.addControl(
-            k,
-            this.createFormFromObject(cls[k], cls[k])
-          );
+          formGroup.addControl(k, this.createFormFromObject(cls[k], cls[k]));
         }
       } else {
         formGroup.addControl(k, new FormControl(cls[k]));
@@ -162,13 +166,14 @@ export class FormService {
   };
 
   createChild = (child: any) => {
+    console.log(child, 'CHILD 1')
     const cls = this.classesService.classes.find(
       (cl: any) => cl.Id === child.Id
     );
     const formTemplate = this.formTemplates?.find(
       (template) => template.value.key === child.Id
     );
-    console.log('CREATE CHILD', formTemplate, this.formTemplates);
+
     return {
       cls: cls,
       data: child,
@@ -177,24 +182,31 @@ export class FormService {
   };
 
   createFormAndModel = (data: any, dataClass: any) => {
-    const foundModel = this.formTemplates.find(
+    const foundTemplate = this.formTemplates.find(
       (template) => template.value.key === dataClass.Id
     );
-    const newForm = this.createFormFromObject(data, dataClass, foundModel?.value);
+    if (foundTemplate) {
+      this.checkForUpdatesToClass(foundTemplate, dataClass);
+    }
+
+    const newForm = this.createFormFromObject(
+      data,
+      dataClass,
+      foundTemplate?.value
+    );
 
     return {
       Id: data.Id ? data.Id : dataClass.Id,
       form: newForm,
-      model: foundModel
-        ? foundModel.value
+      model: foundTemplate
+        ? foundTemplate.value
         : this.createNewFormModel(newForm.value).value,
     };
   };
 
   adjustLabel = (data: any, cl: string) => {
     data = data.replace(/_/g, ' ');
-
-    if (data.toLowerCase().includes(cl)) {
+    if (data?.toLowerCase().includes(cl)) {
       data = data.split(' ').map((word: any) => {
         const firstChar = word.charAt(0).toUpperCase();
 
@@ -204,5 +216,31 @@ export class FormService {
       return data.join(' ');
     }
     return data;
+  };
+
+  checkForUpdatesToClass = (template: any, dataClass: any) => {
+
+    const anyObj: any = {};
+    template.value.fields.forEach((field: any) => {
+      anyObj[field.key] = field.defaultValue;
+    });
+
+    const fields = template.get('fields') as FormArray;
+    Object.entries(dataClass).forEach((key: [string, any]) => {
+      if (!hasOwnProperty(anyObj, key[0]) && typeof key[1] === 'string') {
+        fields.push(this.fb.group({ ...this.createField(key, dataClass.Id) }));
+      } else if (
+        !hasOwnProperty(anyObj, key[0]) &&
+        typeof key[1] === 'object'
+      ) {
+        const childArr = template.value.children?.filter((child:any) => {
+          child.cls.Id === key[1].Id
+        })
+        console.log('PROPERTY', key[0])
+        console.log('CHILDARR', childArr)
+      }
+    });
+    console.log(template, 'template');
+    return template;
   };
 }

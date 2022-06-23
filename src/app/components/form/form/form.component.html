@@ -1,10 +1,18 @@
 <section class="section col" *ngIf="combined">
-  <form [formGroup]="combined.form" [ngClass]="['form']">
+  <form
+    [formGroup]="combined.form"
+    [ngStyle]="combined.model.style"
+    class="form"
+  >
     <ng-container *ngFor="let fields of combined.model.fields">
       <ng-container
         *ngIf="
-          (fields.key !== 'Id' && fields.key !== 'type') && (fields.order === 0 ||
-          combined.form.value[combined.model.fields[fields.order - 1]?.key] !== '')
+          fields.key !== 'Id' &&
+          fields.key !== 'type' &&
+          (fields.order === 0 ||
+            combined.form.value[
+              combined.model.fields[fields.order - 1]?.key
+            ] !== '')
         "
         [ngSwitch]="fields.matformfield"
       >
@@ -22,6 +30,8 @@
             autocomplete="off"
             [name]="fields.key"
             [type]="fields.valuetype"
+            [minlength]="fields.min"
+            [maxlength]="fields.max"
           />
           <textarea
             matInput
@@ -33,18 +43,21 @@
           ></textarea>
           <ng-container *ngSwitchCase="'select'">
             <mat-select
-            [formControlName]="fields.key"
-            autocomplete="off"
-            [multiple]="fields.defaultValue && fields.defaultValue.length > 1 ? true : false"
-          >
-            <mat-option
-              *ngFor="let option of fields.options | stringtoarray"
-              [value]="option"
-              >{{ option }}</mat-option
+              [formControlName]="fields.key"
+              autocomplete="off"
+              [multiple]="
+                fields.defaultValue && fields.defaultValue.length > 1
+                  ? true
+                  : false
+              "
             >
-          </mat-select>
+              <mat-option
+                *ngFor="let option of fields.options | stringtoarray"
+                [value]="option"
+                >{{ option }}</mat-option
+              >
+            </mat-select>
           </ng-container>
-
 
           <ng-container *ngSwitchCase="'date'">
             <input
@@ -69,15 +82,28 @@
             *ngIf="fields.icon && fields.iconLocation === 'before'"
             >{{ fields.icon }}</mat-icon
           >
-          <mat-hint *ngIf="fields.hint">{{fields.hint}}</mat-hint>
-          <mat-error *ngIf="fields.required === 'true'">{{fields.error}}</mat-error>
+          <mat-hint *ngIf="fields.hint">{{ fields.hint }}</mat-hint>
+          <mat-hint *ngIf="fields.valuetype === 'phone'" align="end"
+            >{{ combined.form.get(fields.key)?.value?.length }}/{{
+              fields.max
+            }}</mat-hint
+          >
+          <mat-error
+            *ngIf="
+              fields.required === 'true' && !combined.form.value[fields.key]
+            "
+            >{{ fields.error }}</mat-error
+          >
         </mat-form-field>
         <div *ngSwitchDefault>
           <div [ngSwitch]="fields.formtype">
             <div *ngSwitchCase="'checkbox'">
               <mat-label>{{ fields.label }}</mat-label>
               <div class="row">
-                <p *ngFor="let option of fields.options | stringtoarray" class="row">
+                <p
+                  *ngFor="let option of fields.options | stringtoarray"
+                  class="row"
+                >
                   <mat-checkbox [formControlName]="fields.key">{{
                     option
                   }}</mat-checkbox>
@@ -87,7 +113,9 @@
             <div *ngSwitchCase="'radio'">
               <mat-label>{{ fields.label }}</mat-label>
               <div class="row">
-                <ng-container *ngFor="let option of fields.options | stringtoarray">
+                <ng-container
+                  *ngFor="let option of fields.options | stringtoarray"
+                >
                   <p>{{ option }}</p>
                   <input
                     type="radio"
@@ -97,14 +125,48 @@
                 </ng-container>
               </div>
             </div>
+            <div *ngSwitchCase="'button'">
+              <button mat-raised-button color="primary" (click)="fields.placeholder()">{{fields.label}}</button>
+            </div>
           </div>
         </div>
       </ng-container>
     </ng-container>
     <ng-container *ngFor="let children of combined.model.children">
-      <app-form [data]="children.data" [formTemplate]="children.template" [cls]="children.cls"[displayButton]="false" [form]="combined.form" [parent]="combined.model.key"></app-form>
+      <app-form
+        [data]="children.data"
+        [formTemplate]="children.template"
+        [cls]="children.cls"
+        [displayButton]="false"
+        [form]="combined.form"
+        [parent]="combined.model.key"
+        *ngIf="(children | typeof) === 'object'"
+      ></app-form>
+      <ng-container *ngIf="(children | typeof) === 'array'">
+        <mat-tab-group >
+          <mat-tab *ngFor="let child of children; let i = index" [label]="child.cls.Id + ' ' + i">
+            <app-form
+            [data]="child.data"
+            [formTemplate]="child.template"
+            [cls]="child.cls"
+            [parent]="combined.model.key"
+            [form]="combined.form"
+            [displayButton]="false"
+            [array]="true"
+            [index]="i"
+          ></app-form>
+          </mat-tab>
+        </mat-tab-group>
+      </ng-container>
     </ng-container>
   </form>
-  <button *ngIf="displayButton" mat-raised-button color="primary"  type="button" (click)="onSubmit(combined)">Submit</button>
+  <button
+    *ngIf="displayButton"
+    mat-raised-button
+    color="primary"
+    type="button"
+    (click)="onSubmit(combined)"
+  >
+    Submit
+  </button>
 </section>
-
